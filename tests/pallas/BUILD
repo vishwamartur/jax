@@ -128,6 +128,36 @@ jax_multiplatform_test(
 )
 
 jax_multiplatform_test(
+    name = "mosaic_gpu_ops_test",
+    srcs = [
+        "ops_test.py",
+    ],
+    enable_configs = [
+        "gpu_h100",
+        "gpu_h100_x32",
+    ],
+    env = {
+        "JAX_PALLAS_USE_MOSAIC_GPU": "1",
+        "JAX_PALLAS_VERBOSE_ERRORS": "0",
+    },
+    shard_count = {
+        "gpu": 16,
+    },
+    tags = [
+        "noasan",  # Times out.
+        "nomsan",  # Times out.
+        "notsan",  # Times out.
+    ],
+    deps = [
+        "//jax:pallas",
+        "//jax:pallas_gpu",  # build_cleaner: keep
+        "//jax:pallas_mosaic_gpu",  # build_cleaner: keep
+        "//jax:pallas_tpu",
+        "//jax:pallas_tpu_ops",
+    ] + py_deps("absl/testing") + py_deps("hypothesis") + py_deps("numpy"),
+)
+
+jax_multiplatform_test(
     name = "indexing_test",
     srcs = [
         "indexing_test.py",
